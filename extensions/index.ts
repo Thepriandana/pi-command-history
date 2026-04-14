@@ -72,11 +72,16 @@ export default function (pi: ExtensionAPI) {
   let savedEditorText = ""; // text before history browsing started
   let currentCwd = "";
 
-  pi.on("session_start", (_event, ctx) => {
-    currentCwd = ctx.cwd;
+  function ensureHistory(cwd: string): void {
+    if (currentCwd === cwd && history.length > 0) return;
+    currentCwd = cwd;
     history = loadHistory(currentCwd);
     historyIndex = -1;
     savedEditorText = "";
+  }
+
+  pi.on("session_start", (_event, ctx) => {
+    ensureHistory(ctx.cwd);
 
     ctx.ui.setStatus(
       "folder-history",
@@ -108,6 +113,12 @@ export default function (pi: ExtensionAPI) {
 
   // Navigate back in history (older)
   const goBack = (ctx: any) => {
+    const cwd = ctx.cwd ?? currentCwd;
+    if (!cwd) return;
+
+    // Lazy load from disk if history is empty (e.g. session_start missed)
+    ensureHistory(cwd);
+
     if (history.length === 0) return;
 
     if (historyIndex === -1) {
