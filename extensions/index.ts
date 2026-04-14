@@ -151,6 +151,7 @@ export default function (pi: ExtensionAPI) {
     description: "Clear all saved command history for this folder",
     handler: async (_args, ctx) => {
       const confirmed = await ctx.ui.confirm(
+        "Clear History",
         "Clear all command history for this folder?"
       );
       if (!confirmed) {
