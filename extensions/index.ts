@@ -6,8 +6,8 @@
  * you can cycle through all commands ever entered there.
  *
  * Keybindings:
- *   shift+up  - Previous command in folder history
- *   shift+down - Next command in folder history
+ *   alt+up   - Previous command in folder history
+ *   alt+down - Next command in folder history
  *
  * History is stored in ~/.pi/folder-history/<path-with-dashes>.jsonl
  */
@@ -86,7 +86,7 @@ export default function (pi: ExtensionAPI) {
     ctx.ui.setStatus(
       "folder-history",
       history.length > 0
-        ? `📜 ${history.length} cmds (shift+↑/↓)`
+        ? `📜 ${history.length} cmds (alt+↑/↓)`
         : undefined
     );
   });
@@ -146,13 +146,13 @@ export default function (pi: ExtensionAPI) {
     }
   };
 
-  // shift+up / shift+down — works reliably on macOS, Linux, and Windows
-  pi.registerShortcut("shift+up", {
+  // alt+up / alt+down — arrow keys that work on macOS (Terminal.app + iTerm2)
+  pi.registerShortcut("alt+up", {
     description: "Previous command from folder history",
     handler: goBack,
   });
 
-  pi.registerShortcut("shift+down", {
+  pi.registerShortcut("alt+down", {
     description: "Next command from folder history",
     handler: goForward,
   });
