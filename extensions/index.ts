@@ -13,7 +13,7 @@
  */
 
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { existsSync, mkdirSync, readFileSync, appendFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, appendFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
 
@@ -144,5 +144,31 @@ export default function (pi: ExtensionAPI) {
   pi.registerShortcut("shift+down", {
     description: "Next command from folder history",
     handler: goForward,
+  });
+
+  // /clear-history — wipe the history for this folder
+  pi.registerCommand("clear-history", {
+    description: "Clear all saved command history for this folder",
+    handler: async (_args, ctx) => {
+      const confirmed = await ctx.ui.confirm(
+        "Clear all command history for this folder?"
+      );
+      if (!confirmed) {
+        ctx.ui.notify("Cancelled.", "info");
+        return;
+      }
+
+      const file = getHistoryFile(currentCwd);
+      if (existsSync(file)) {
+        writeFileSync(file, "", "utf-8");
+      }
+
+      history = [];
+      historyIndex = -1;
+      savedEditorText = "";
+
+      ctx.ui.setStatus("folder-history", undefined);
+      ctx.ui.notify("🗑️ Folder history cleared.", "info");
+    },
   });
 }
