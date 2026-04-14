@@ -6,8 +6,8 @@
  * you can cycle through all commands ever entered there.
  *
  * Keybindings:
- *   ctrl+up   - Previous command in folder history
- *   ctrl+down - Next command in folder history
+ *   shift+up  - Previous command in folder history
+ *   shift+down - Next command in folder history
  *
  * History is stored in ~/.pi/folder-history/<path-with-dashes>.jsonl
  */
@@ -81,7 +81,7 @@ export default function (pi: ExtensionAPI) {
     ctx.ui.setStatus(
       "folder-history",
       history.length > 0
-        ? `📜 ${history.length} cmds (ctrl+↑/↓)`
+        ? `📜 ${history.length} cmds (shift+↑/↓)`
         : undefined
     );
   });
@@ -106,40 +106,43 @@ export default function (pi: ExtensionAPI) {
     return { action: "continue" as const };
   });
 
-  // ctrl+up: go back in history (older)
-  pi.registerShortcut("ctrl+up", {
-    description: "Previous command from folder history",
-    handler: (ctx) => {
-      if (history.length === 0) return;
+  // Navigate back in history (older)
+  const goBack = (ctx: any) => {
+    if (history.length === 0) return;
 
-      if (historyIndex === -1) {
-        // Starting to browse - save current editor text
-        savedEditorText = ctx.ui.getEditorText();
-      }
+    if (historyIndex === -1) {
+      savedEditorText = ctx.ui.getEditorText();
+    }
 
-      const nextIndex = historyIndex + 1;
-      if (nextIndex >= history.length) return; // already at oldest
+    const nextIndex = historyIndex + 1;
+    if (nextIndex >= history.length) return; // already at oldest
 
-      historyIndex = nextIndex;
-      // history is oldest-first, so most recent is at the end
+    historyIndex = nextIndex;
+    // history is oldest-first, so most recent is at the end
+    ctx.ui.setEditorText(history[history.length - 1 - historyIndex]);
+  };
+
+  // Navigate forward in history (newer)
+  const goForward = (ctx: any) => {
+    if (historyIndex <= -1) return; // not browsing
+
+    historyIndex--;
+
+    if (historyIndex === -1) {
+      ctx.ui.setEditorText(savedEditorText);
+    } else {
       ctx.ui.setEditorText(history[history.length - 1 - historyIndex]);
-    },
+    }
+  };
+
+  // shift+up / shift+down — works reliably on macOS, Linux, and Windows
+  pi.registerShortcut("shift+up", {
+    description: "Previous command from folder history",
+    handler: goBack,
   });
 
-  // ctrl+down: go forward in history (newer)
-  pi.registerShortcut("ctrl+down", {
+  pi.registerShortcut("shift+down", {
     description: "Next command from folder history",
-    handler: (ctx) => {
-      if (historyIndex <= -1) return; // not browsing
-
-      historyIndex--;
-
-      if (historyIndex === -1) {
-        // Back to current text
-        ctx.ui.setEditorText(savedEditorText);
-      } else {
-        ctx.ui.setEditorText(history[history.length - 1 - historyIndex]);
-      }
-    },
+    handler: goForward,
   });
 }

@@ -1,6 +1,6 @@
 # pi-command-history
 
-Folder-based persistent command history for [pi](https://github.com/badlogic/pi-mono). Recall previous commands with `ctrl+up`/`ctrl+down` across sessions — as long as you're in the same folder, your full command history is always available.
+Folder-based persistent command history for [pi](https://github.com/badlogic/pi-mono). Recall previous commands with `shift+up`/`shift+down` across sessions — as long as you're in the same folder, your full command history is always available.
 
 ## Install
 
@@ -18,10 +18,10 @@ pi -e npm:pi-command-history
 
 | Shortcut | Action |
 |----------|--------|
-| `ctrl+up` | Previous command (older) |
-| `ctrl+down` | Next command (newer) |
+| `shift+up` ⬆ | Previous command (older) |
+| `shift+down` ⬇ | Next command (newer) |
 
-When you enter a command in pi, it's saved to a per-folder history file. Next time you open pi in the same folder (even in a new session), press `ctrl+up` to cycle through your previous commands.
+When you enter a command in pi, it's saved to a per-folder history file. Next time you open pi in the same folder (even in a new session), press `shift+up` to cycle through your previous commands.
 
 ### What gets saved
 
